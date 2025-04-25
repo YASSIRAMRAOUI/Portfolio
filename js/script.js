@@ -93,16 +93,62 @@ let typed = new Typed(".typing", {
     addBackSection(sectionIndex);
   });
   
-  const navTogglerBtn = document.querySelector(".nav-toggler"),
-    aside = document.querySelector(".aside");
-  navTogglerBtn.addEventListener("click", () => {
-    asideSectionTogglerBtn();
-  });
-  
-  function asideSectionTogglerBtn() {
-    aside.classList.toggle("open");
-    navTogglerBtn.classList.toggle("open");
-    for (let i = 0; i < totalSection; i++) {
+  // Update the nav toggler button event listener
+const navTogglerBtn = document.querySelector(".nav-toggler"),
+aside = document.querySelector(".aside");
+
+// Use both click and touch events for better mobile support
+navTogglerBtn.addEventListener("click", asideSectionTogglerBtn);
+navTogglerBtn.addEventListener("touchstart", asideSectionTogglerBtn);
+
+function asideSectionTogglerBtn(e) {
+  e.preventDefault();
+  aside.classList.toggle("open");
+  navTogglerBtn.classList.toggle("open");
+  document.body.classList.toggle("menu-open");
+  for (let i = 0; i < totalSection; i++) {
       allSection[i].classList.toggle("open");
-    }
   }
+}
+
+// Update nav item click handlers for mobile
+for (let i = 0; i < totalNavList; i++) {
+const a = navList[i].querySelector("a");
+a.addEventListener("click", function(e) {
+    // For mobile, prevent default only if it's a hash link
+    if (this.getAttribute("href").startsWith("#")) {
+        e.preventDefault();
+    }
+    removeBackSection();
+    for (let j = 0; j < totalNavList; j++) {
+        if (navList[j].querySelector("a").classList.contains("active")) {
+            addBackSection(j);
+        }
+        navList[j].querySelector("a").classList.remove("active");
+    }
+    this.classList.add("active");
+    showSection(this);
+    if (window.innerWidth < 1200) {
+        asideSectionTogglerBtn(e);
+    }
+});
+
+// Add touch event for mobile
+a.addEventListener("touchstart", function(e) {
+    if (this.getAttribute("href").startsWith("#")) {
+        e.preventDefault();
+    }
+    removeBackSection();
+    for (let j = 0; j < totalNavList; j++) {
+        if (navList[j].querySelector("a").classList.contains("active")) {
+            addBackSection(j);
+        }
+        navList[j].querySelector("a").classList.remove("active");
+    }
+    this.classList.add("active");
+    showSection(this);
+    if (window.innerWidth < 1200) {
+        asideSectionTogglerBtn(e);
+    }
+  });
+}
